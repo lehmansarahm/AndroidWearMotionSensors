@@ -69,6 +69,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     ToggleButton butRecord;
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +151,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
     }
 
+    /**
+     *
+     * @param toWrite
+     */
     public void writeFile(String toWrite){
         if(bufferedWriter == null){
             try {
@@ -162,6 +170,11 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
     }
 
+    /**
+     *
+     * @param sensor
+     * @param accuracy
+     */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
@@ -186,6 +199,9 @@ public class MainActivity extends Activity implements SensorEventListener {
         butRecord.setText(R.string.stop);
     }
 
+    /**
+     *
+     */
     private void destroySensors(){
         if(mSensorManager!=null){
             mSensorManager.unregisterListener(this);
