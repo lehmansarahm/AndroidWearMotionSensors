@@ -8,12 +8,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.wearable.view.DotsPageIndicator;
-import android.support.wearable.view.GridViewPager;
-import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -25,7 +21,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Locale;
 
@@ -56,15 +51,15 @@ public class MainActivity extends Activity implements SensorEventListener {
     float[] mAccelerometerValues = null;
     float orientation[] = new float[3];
 
-    private File directory;
+    private File directory, dataDirectory, oldDataDirectory;
     private File file;
     private BufferedWriter bufferedWriter;
 
     private String currentTime;
 
     Calendar calTime = Calendar.getInstance();
-    private SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss", Locale.US);
-    private SimpleDateFormat date = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss", Locale.US);
+    private SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss.SSS", Locale.US);
+    private SimpleDateFormat date = new SimpleDateFormat("MM-dd-yyyy_HH:mm:ss", Locale.US);
     private final String fileName = date.format(calTime.getTime()) + ".csv";
 
     ToggleButton butRecord;
@@ -79,7 +74,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
 
         directory = new File(Environment.getExternalStorageDirectory().getPath());
-        file = new File(directory, fileName);
+        dataDirectory = new File(directory, "watchData");
+        if (!dataDirectory.exists()) dataDirectory.mkdir();
+        oldDataDirectory = new File(dataDirectory, "old");
+        if (!oldDataDirectory.exists()) oldDataDirectory.mkdir();
+
+        file = new File(dataDirectory, fileName);
         butRecord = (ToggleButton) this.findViewById(R.id.butRec);
         butRecord.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -124,6 +124,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
         if (allValues == null) {
             allValues = new ArrayList<>();
+            allValues.add("Time,Record No,Azimuth,Pitch,Roll,Accel-X,Accel-Y,Accel-Z\n");
         }
         currentTime = time.format(System.currentTimeMillis());
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
@@ -138,12 +139,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         if (mAccelerometerValues != null && rotationMatrix != null) {
             values = currentTime + ","
                     + lineNumber + ","
-                    + Float.toString(orientation[0]) + ","
-                    + Float.toString(orientation[1]) + ", "
-                    + Float.toString(orientation[2]) + ","
-                    + Float.toString(mAccelerometerValues[0]) + ", "
-                    + Float.toString(mAccelerometerValues[1]) + ", "
-                    + Float.toString(mAccelerometerValues[2]) + "\n";
+                    + Float.toString(orientation[0]) + ","              // azimuth
+                    + Float.toString(orientation[1]) + ", "             // pitch
+                    + Float.toString(orientation[2]) + ","              // roll
+                    + Float.toString(mAccelerometerValues[0]) + ","    // x (m/sec^2)
+                    + Float.toString(mAccelerometerValues[1]) + ","    // y (m/sec^2)
+                    + Float.toString(mAccelerometerValues[2]) + "\n";   // z (m/sec^2)
             TextView timeTextView = (TextView) findViewById(R.id.text_time);
             timeTextView.setText(currentTime);
             lineNumber++;
