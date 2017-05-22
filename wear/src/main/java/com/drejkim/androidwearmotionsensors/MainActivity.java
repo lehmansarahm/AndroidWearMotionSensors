@@ -142,8 +142,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                     + Float.toString(orientation[0]) + ","              // azimuth
                     + Float.toString(orientation[1]) + ", "             // pitch
                     + Float.toString(orientation[2]) + ","              // roll
-                    + Float.toString(mAccelerometerValues[0]) + ","    // x (m/sec^2)
-                    + Float.toString(mAccelerometerValues[1]) + ","    // y (m/sec^2)
+                    + Float.toString(mAccelerometerValues[0]) + ","     // x (m/sec^2)
+                    + Float.toString(mAccelerometerValues[1]) + ","     // y (m/sec^2)
                     + Float.toString(mAccelerometerValues[2]) + "\n";   // z (m/sec^2)
             TextView timeTextView = (TextView) findViewById(R.id.text_time);
             timeTextView.setText(currentTime);
